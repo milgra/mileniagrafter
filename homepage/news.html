@@ -1,0 +1,257 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Milenia Grafter Server</title>
+
+<meta name="Keywords" content="Milenia Grafter Server MilGra Open Source Flash Media RTMP AMF Live Stream Streaming Sex Drugs Rock and Roll Shine Success FLV Sorenson on2 VP6 mp4" />
+<script type="text/javascript" src="http://www.google-analytics.com/urchin.js">
+</script>
+<script type="text/javascript">
+_uacct = "UA-3157879-1";
+urchinTracker();</script>
+<script src="Scripts/AC_ActiveX.js" type="text/javascript"></script>
+<script src="Scripts/AC_RunActiveContent.js" type="text/javascript"></script>
+<style type="text/css">
+<!--
+body {
+margin-left: 20px;
+margin-top: 20px;
+margin-right: 0px;
+margin-bottom: 0px;
+background-color: #4A86FF;
+}
+body, td, th {
+font-family: Arial, Helvetica, sans-serif;
+color: #000066;
+font-size: 12px;
+}
+a:link {
+color: #000066;
+}
+a:visited {
+color: #000066;
+}
+a:hover {
+color: #000066;
+}
+a:active {
+color: #000066;
+}
+-->
+</style></head>
+<body style="color: rgb(0, 0, 0); background-color: rgb(206, 227, 255);" link="#000099" alink="#000099" vlink="#990099"><span style="font-weight: bold;">10 06 2008<br /><br /></span>So, these are the things what are have to be done :<br />- fine tune bandwidth / throughput detection and frame dropping<br />-
+create a buffer pool for live streams, because now they are just
+multiplexed as they arrive, and broadcasting delay grows continously<br />- vp6/h264 rtmp implementation<br />- rtmpe decypher. it seems like a standard RC4 strream cypher, but i'm sure they changed something<br />- rtmpt maybe<br /><br />thats all folks!<br /><span style="font-weight: bold;"><br />05 06 2008</span><br /><br />Hey!
+The long-lasting development of 0.8 beta is finally over!!! yaaaaay!
+you can't imagine how happy i am with this, because i really got
+depressed of the non-progress, and lack of time,&nbsp;one month
+without any result triggers death-wish in me.<br /><br />But finally
+its over. I've upgraded the reference, the unit tester is working, but i won't do any performance tuning until h264 and vp6
+streaming isn't implemented, especially with adobe live fms. Live
+streaming is really becoming one of the most important thing on the
+net, and FP9 and 10 built in sorenson encoder is useless. the only
+solution avaliable is adobe live encoder, so i will tune milenia for the use of
+that.<br /><br />application scopes are already implemented in this version.<br /><br />
+I'll bugfix the recorder part of the unit tester and the stress tester,
+and i will put up the 0.8 beta application package in the downloads.
+<p style="font-weight: bold;">08 04 2008</p>
+<p>Good news everyone!!!</p>
+<p>Finally,
+i’m more-or-less ready with the new release of Milenia. It’s quite raw
+right now, but in the next few days i will stabilize it. But till then,
+you can already browse or checkout the source from google code ( thanks
+Anjo for the tip, google code really rocks )</p>
+<p>http://code.google.com/p/milgra/source/checkout</p>
+<p>I’ve also created a google group for developer discussion</p>
+<p>http://groups.google.com/group/milenia-grafter</p>
+<p>If you want to follow Milenia related infos, please join the
+group, i won’t disturb you in this direct way again.</p>
+<p>I don’t know if the forum will be needed, but i will keep it
+for a while.</p>
+<p>Short feature list:</p>
+<p>Live Audio/Video streaming<br />
+Live Audio/Video recording<br />
+Recorded FLV playback<br />
+FLV playback speed set - slow/fast, forward/reverse<br />
+Stream access control based on stream events<br />
+Simple and fast custom application deployment<br />
+Lightweight data communication<br />
+Client mode - you can connect Milenia to any kind of flash media server<br />
+Server to server Data/Audio/Video communication - stream pushing ,
+clustering<br />
+Fast as light, solid as rock!<br />
+Admin console<br />
+Stress tester<br />
+Unit tester<br />
+Built-in bandwidth check</p>
+<p>I will come up with a downloadable stable version around the
+weekend, i will notify everyone on groups.</p>
+<p>The license is still GPL V2, and i won’t change it. I want the
+world to be free and open.</p>
+<p>cheers,</p>
+<p>Milan</p>
+<p style="font-weight: bold;">03 April 2008</p>
+<p>Hi
+everybody! Long time no see? I know :) Well, that happnens when you
+have to earn money for living, and there is no time for hobby :( But
+bewaaare, Milenia 0.8 is on its way, with lots of very tasty things :D</p>
+<p style="font-weight: bold;">27 January 2008</p>
+<p>7c
+52 74 6d 70 53 61 6d 70 6c 65 41 63 63 65 73 73 01 01 01 01 , what
+means “|RtmpSampleAccess( true , true )”, and Mileania now enables
+bitmapdrata draws, and computespectrums on rtmp streams. yeah!!! By the
+way, if you are planning FMS license purchase, forget Streaming Server
+licenses, it disables custom application creation! You have to buy the
+interactive edition for the old extreme prizes... It's so annoying...
+FMS3 is again a fantastic product from adobe, which was created by the
+marketing division, not by programmers. "Twice streaming capacity"...
+Of course, on a twice bigger processor... Oh, and about the new swf
+hash check security feature - why adobe thinks that i cannot simply
+send the desired hash/size code with a custom rtmp protocol? :D But
+RTMPE seems interesting, i couldn't see any secure handshake, it seems
+that the player send a key right at the start in the rtmp handshake.</p>
+<p style="font-weight: bold;">21 January 2008</p>
+<p>First,
+i would like to apologize, i haven't really had time for Milenia in the
+past month. I've become the chief software architect at make.tv, and i
+was under a heavy load in the past four weeks. The good thing about
+this that we will use Milenia, and i can test it under extreme load, so
+hopefully it will become the world's fastest rock stable rtmp server.
+I'll try to finalize the .7 beta this weekend, but i can't promise
+anything. </p>
+<p style="font-weight: bold;">2 January 2008</p>
+<p>Hi
+everybody, it's been a long time... Milenia Grafter Server 0.7 is on
+its way, i have to finalize a few things, rewrite demo applications,
+and it's ready. It features bugfixed flv recording, and flv playing,
+the stream handling is now fms-like, you can play non-existing streams
+now, and wait for a publisher, you can also create persistent streams
+for web-tv projects. API is changed, a Stream class were born, and it's
+6Kbytes smaller than the previous version. Keep waiting!!!</p>
+<p style="font-weight: bold;">25 October 2007</p>
+<p>And the first public version is ready!!!! YEEEEEAAAAHHH!!!</p>
+<p style="font-weight: bold;">10 October 2007</p>
+<p>Serialized
+sucking was the keyword for the last three days, i have to totally
+rewrite rtmp serialization to take chunk splitting/merging to a higher
+level to ensure network traffic's better scattering. and after this
+another two things occused the same bug which caused rewriting. but
+now, it is flawless. i'm finishing stress tester, then milenia grafter
+chat demo. yupeeee.</p>
+<p>interesting fact: it seems
+like that flash player instances use a common stream
+comressos/decompressor pool, because decompression error in one player
+caeses stream death in every other players.</p>
+<p style="font-weight: bold;">03 October 2007</p>
+<p>Let's see what have i done in the last 2 months.</p>
+<p>&nbsp;</p>
+<p>A very fast masspoint dynamics engine lack of geometrical
+shapes, in java/AS3</p>
+<p>an RTMP serializer and deserializer<br />
+</p>
+<p>an AMF serializer and deserializer<br />
+</p>
+<p>a stream manager<br />
+</p>
+<p>a thread manager optimized for a flash media server<br />
+</p>
+<p>a media server framework</p>
+<p>spectacular AS3 effects, exploding, cube-turn, displaced
+transitions<br />
+</p>
+<p>table, slider, textfield components<br />
+</p>
+<p>a simple mulit-user video chat<br />
+</p>
+<p>a full-featured admin for milenia grafter sever full of effects</p>
+<p>&nbsp;</p>
+<p>I'm in deep love with myself :D</p>
+<p style="font-weight: bold;">02 October 2007</p>
+<p>Flash's
+gradientFill is a totally useless crap. It showed three different
+results without code modification, and it only knows linear gradient.
+So I've written an ExponentialRadialGradientFill class instead. By the
+way, admin client applicatioin is almost ready. Only server-side admin,
+and stress test is left. Then comes documentation and testing. Yeah.</p>
+<p style="font-weight: bold;">28 September 2007</p>
+<p>Madness!!!
+Somehow i deleted all my server source playing with jar manifest!!!
+Aaaaargh!!! Fortunately i made a backup three days ago, and i was
+working mainly on the client in the past days, so i could rewrite
+missing parts from head between 1 AM and 3 AM :( I also made a party in
+the evening in my flat, so i'm a little bit tired.</p>
+<p style="font-weight: bold;">26 September 2007</p>
+<p>Very
+nice progress in the last two days, I started creating the first demo
+application: Milenia Grafter chat. Yesterday i made the design, and
+written a simple Table component for nick name listing, and a slider
+component for nick/chat sliding. Today i renewed my
+cube-screen-switching effect, it is real 3D now. I also created an
+"exploding window" effect for the login window, they are really
+spectacular.</p>
+<p>Tomorrow i will finish the chat,
+maybe the server side logic also, and only the admin application is
+left, and testing can begin. Wow.</p>
+<p style="font-weight: bold;">19 September 2007</p>
+<p>10:30</p>
+<p>I
+switched to non-blocking sockets, and it is annoying. Blocking sockets
+would be great, because i can check data availability with
+inputstream.available( ), so i can avoid thread blocking. The only
+thing it can't do is checking end of stream without blocking the
+thread, and that's a shame. :( So i swithed to SocketChannels.</p>
+<p>23.56</p>
+<p>This
+was one of the hardest day in my programmer career... :D from 11 AM to
+22 PM i was trying to figure out why the publisher client stops
+publishing after 90 seconds... it just stopped, no data in or out, but
+it wasn't disconnected... i've tried everything, i rewrote thread
+handling twice, wrote many test clients, debug traces everywhere, and
+nothing... i'm a typical capriconr, i felt like dying... but i never
+give up :D so, i've realized that it must be something with flash
+player 9, because red5 also dies in the first second, and i've used
+red5 for rtmp message testing, so i had to get an Adobe FMS somehow...
+after a short search i've found a page with live streaming, and after
+five minutes of reverse engineering the communication between the
+client and the server i managed to connect and publish my stream :D so
+i started tcp dumping, and after 10 megabytes of raw data i stopped. I
+started to filter the data every possible way to find something
+unusual, and after a little sucking, i realized thatunlike red5 fms
+sends a clientBW, serverBW, and a long ping in one packet at the
+beginning. ( so i wouldn't have to dump 10 megabytes :D ). and victory,
+it works like an angel :D</p>
+<p>tomorrow i implement
+stream access control with stream event listeners, and server-to-server
+streaming. I did the active handshake part in the morning.</p>
+<p style="font-weight: bold;">18 September 2007</p>
+<p>Live
+streaming is bugfixed!!! RTMP's live streaming is a really stupid and
+annoying thing. First the client sends a createStream invoke, you have
+to pass back a result, containing a streamID generated by the server.
+Okay. Then the client sends a publishStream/playStream invoke with the
+stream name, and without any of the previous id's. But you have to pair
+somehow the stream name, and the server generated id, because
+deleteStream passes only the server generated stream id. So the only
+connection point is that publishStream/playStream comes after
+createStream synchronously, but it is not ensured by the protocol. If
+only the whole communication would come on the same rtmp address,
+everything would be okay.</p>
+<p style="font-weight: bold;">17 september 2007</p>
+<p>I've chased a deadlock for three hours, then i realized that
+inputstream.read( ) blocks the thread... lame :D</p>
+<p style="font-weight: bold;">16 September 2007</p>
+<p>Stream
+recording is ready. It tricked me a little, i tought that i have to
+increase audio data's timestamp independently from video, but after two
+hours of trying it appeared that another bug caused trouble.</p>
+<p style="font-weight: bold;">12 September 2007</p>
+<p>At
+4:44 PM live streaming worked for the first time! I'm very optimistic
+about the performance, i published a 320x240 stream with 25 fps, 30
+Kbytes/sec, and with ten subscribers the cpu usage of the server is
+still under 1 percent.</p>
+<p style="font-weight: bold;">02 September 2007</p>
+<p>RTMP
+Serializer/Deserializer is ready. I started working on the server one
+week ago, after a few test applications, and heavy understanding of the
+rtmp protocol, but i'm still very pleased about the progress.</p>
+</body></html>

@@ -1,0 +1,1216 @@
+1. Introduction
+
+	1.1 Overview
+	1.2 Features
+	1.3 Sytem Requirements
+	1.4 Performance
+	1.5 License
+	1.6 Kind donators
+
+2. Running the server
+
+	2.1 Overview
+	2.2 Parameters
+	2.3 Admin console
+	2.4 Unit test
+	2.5 Unit test
+
+3. Programming the server
+	
+	3.1 Overview
+	3.2 IApplication
+	3.3 Client class
+	3.4 Stream class
+	3.5 Wrapper classes
+	3.6 InvokeEvent
+	3.7 StreamEvent
+	3.8 StatusEvent
+	3.9 Utilities
+
+4. Development howtos
+	
+	4.1 How to create a Custom Application?
+	4.2 How to embed Milenia in my package?
+	4.3 How to recompile Milenia?
+	
+
+1. Introduction
+
+
+	1.1 Overview
+	
+		Milenia Grafter Server is an open source flash media server that just 
+		works. With Milenia you don't have to know dozens of frameworks and 
+		tricks to create custom applications, you don't have to read up 
+		thousands of lines of configuration xml's to configure your server 
+		properly, you don't have to tear your hair off because of magic 
+		mistakes and unexpected errors coming from a closed source application, 
+		you don't have to wait for the never-coming answers of water-headed 
+		corporations, you don't have to pay thousands of dollars/euros for 
+		poorly performing enterprise level products. Simplicity was the only 
+		keyword during its creation, so i have not implemented any useless 
+		features from other flash media server implementations.
+		
+	
+	1.2 Features
+	
+		Live Audio/Video streaming
+		Live Audio/Video recording
+		Video on demand ( VP6 and H264 support is coming )
+		FLV playback speed set - slow/fast, forward/reverse
+		Stream access control based on stream events
+		Simple and fast custom application deployment
+		Lightweight data communication
+		Client mode - you can connect Milenia to any kind of flash media server
+		Stream pushing/pulling to/from other servers
+		Built-in bandwidth test - bidirectional and accurate
+		Sample access enabled
+		Admin console
+		Stress tester
+		Unit tester
+	
+		Future Features:
+		
+		Adobe live encoder integration ( 0.9 )
+		VP6, H264 capability ( 0.9 )
+		RTMPE support ( 1.0 )
+		
+	
+	1.3 System Requirements:
+	
+		Any system with Java Virtual Machine 1.5
+		
+	
+	1.4 Performance
+	
+		Under construction.
+	
+	
+	1.5 The license
+	
+		Milenia Grafter Server is licensed under General Public License v2.
+		
+		Copyright (c) 2007-2008 by Milan Toth. All rights reserved.
+		This program is free software; you can redistribute it and/ormodify it 
+		under the terms of the GNU General Public Licenseas published by the 
+		Free Software Foundation; either version 2of the License, or ( at your 
+		option ) any later version.
+		This program is distributed in the hope that it will be useful, but 
+		WITHOUT ANY WARRANTY; without even the implied warranty of 
+		MERCHANTABILITY	or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+		General Public License for more details. You should have received a 
+		copy of the GNU General Public Licensealong with this program; if not, 
+		write to the Free SoftwareFoundation, Inc., 51 Franklin Street, 
+		Fifth Floor, Boston, MA 02110-1301, USA.
+		
+	
+	1.6 Kind donators
+	
+		Apakian Pty.Ltd
+		Reinhard & Löw GbR
+		
+		Thank you guys! :)
+		
+
+2. Running the server
+
+
+	2.1 Overview
+	
+		Milenia doesn't need installation, since it's one single java jar file, 
+		you simply execute it with the java virtual	machine. First you have to 
+		be sure that your system has Java Runtime Environment 1.5 or higher. 
+		If not, download it from sun. If you have it, simply type
+		 
+		java -jar milgra.jar
+		
+		in the command line, and it should show up the version info and the 
+		parameter hints.
+		
+		The basic server package looks like this : 
+		
+		applications <DIR>
+		streams <DIR>
+		sources <DIR>
+		milgra.jar
+		license.txt
+		
+		"applications" is the default custom application directory for the 
+		server.	You have to copy your custom application jars here. 
+		"streams" is the default directory for streams, Milenia saves recorded 
+		streams here. 
+		"sources" contains the sources and the compiled admin application also. 
+		"milgra.jar" is the server itself, "license.txt" is the GPL v2 license.
+	
+	
+	2.2 Parameters
+		
+		start
+		
+			starts the server on the default port ( 1935 )
+		
+		stop
+		
+			stops the server on the default port ( 1935 )
+		
+		port [number]
+		
+			sets the listener port to given number
+		
+		iostep [number]
+		
+			sets the io process stepping delay in milisecs. Default is 15
+		
+		iothreads [number]
+		
+			sets the thread counts of process groups. If your server isn't 
+			under a heavy load, or you want other services to run on your 
+			machine, one thread is enough. But if you have a multi-processored 
+			multi-cored monster, you can start experimenting with this setting 
+			and the stress tester. It won't speed up data throughput since only 
+			one process can reach the system bus and the sockets at a time, but
+			it fastens stream pushing between threads, and data processing also.
+		
+		streams [directory]
+		
+			sets the stream directory where milenia stores/reads up streams. 
+			The directory will be created under the directory where milgra.jar 
+			is.
+		
+		applications [directory]
+		
+			sets the custom application directory where milenia looks for 
+			custm applications. The directory will be created under the 
+			directory where milgra.jar is.
+		
+		examples:
+		
+			The following command starts the server listeneing on port 80, 
+			with 20 milliseconds of io stepping and with the default stream 
+			directory "mystreams"
+		
+		java -jar milgra.jar start port 80 iostep 20 streams mystreams
+		
+			The following command stops the server listening on port 80
+		
+		java -jar milgra.jar stop port 80
+		
+		For performance tuning you may have to use additional java virtual 
+		machine switches, for example,
+		
+			-server
+		
+		or if jvm runs out of memory
+		
+			-Xmn -Xms -Xmx to set memory size.
+		
+		The following command starts Milenia with default settings with 500 
+		megabytes of maximum memory usage.
+		
+			java -Xmx500M -jar milgra.jar start
+			
+	
+	2.3 Admin Console
+	
+		To use the admin console, ensure that the server-side admin application 
+		( admin.jar ) is under the Milenia's custom application directory, 
+		and the server is running. Open admin.swf ( under sources directory by 
+		default ) in a web browser having Flash Player 9. 
+		
+		For the first run type "admin" for both username and password.
+		
+		Admin application creates a fourth directory called "admin" in 
+		Milenia's root for its config file and logs. I recommend to immediately 
+		set a new username/password in admin/config.xml, and you may define 
+		allowed ip addresses also.
+		
+		In the console, you will see two main tabs. 
+		
+		Graphs tab
+		
+			After a succesful login, you will find yourself at the graphs tab.
+			These graphs shows the i/o states of the server. "Bandwidth" shows 
+			the overall, incoming, and outgoing bandwidth in Megabits/second. 
+			"Connected Clients" shows the overall, passive and active client 
+			count on the server. Active clients are the clients created by a 
+			custom application to connect to other servers. "Processing Threads" 
+			shows socket, client and stream pool processing thread count,
+			"Execution Times" show the average process execution times of the 
+			different thread pools.
+		
+		Applications tab
+		
+			You can check the available applications here. They consists of the
+			custom applications under Milenia Grafter Server / applications 
+			directory, and the running applications ( if custom application jar 
+			has been removed from the directory, but the application hasn't 
+			been unloaded ). You can check the status, connected clients and 
+			bandwidth info of an application. You can refresh application list 
+			any time, this case Milenia will reread the applicaitons directory. 
+			You have to wait for the next refresh event to see the new list. 
+			You can unload/load applications by pressing load/unload buttons.
+			Under applications tab, it will show one connected client ( you ) 
+			and one running application ( the admin application ).
+			
+			I also encourage the use of jconsole if you want to receive really 
+			detailed information about your machine and jvm health status.
+	
+	
+	2.4 Unit tester
+	
+		You can test all of the server's functions with this application, and
+		also you can perform stress test on a server with this.
+		The other purpose of the stress tester is the API showcase for 
+		developers, both server and client side code is well commented, and
+		covers all possibilities of Milenia.
+		
+		Client-Server Connection
+		
+			Performs various connection tests, tests all possible connection 
+			events between the client and the server.
+			
+		Client-Server Data Communication
+		
+			Performs Data Exchange tests. Tests invoke calls from client to
+			server and back, and tests exchange of AMF0 types.
+			
+		Client-Server Live Streaming
+		
+			Performs live streaming tests between client and server. Publishes
+			the camera and mic input to server, and plays it. Tests stream
+			events, and enable/disable functionality.
+			
+		Client-Server Recorded Streaming
+		
+			Performs recorded stream ( non vp6 flv ) testing. Plays an
+			individual stream from the server, and also plays a TV-stream
+			set up on the server.
+			
+		Client-Server Stream Recording
+		
+			Tests stream recording capabilities of the server.
+			
+		Server-Server Connection
+			
+			Performs various connection tests between two servers.
+			
+		Server-Server Data Communication
+		
+			Tests invokes and AMF0 data exchange between two servers.
+		
+		Server-Server Live Streaming
+		
+			Publishes Camera and Microphone input to the host server, the
+			server publishes the stream to the secondary server, then pulls
+			it under a new name, and the client shows that stream.
+			
+		Server-Server Recorded Streaming
+		
+			Under construction.
+			
+		Multi-Stream Test
+		
+			Tests playing multiple streams from the server ( > 20 ). Tests
+			rtmp channel overload, and rtmp channel page switching.
+			
+		FMS Compatibilty tests
+		
+			Connects Milenia to an FMS. There is also a sample fms application
+			( main.asc ) under sources, with you can test fms to milenia 
+			connection.
+			
+		Bandwidth check
+		
+			Tests download and upload bandwidth between client and server.
+			These values will never be the maximum values of your connection,
+			the maximum values are depending on the stepping time and buffer
+			size of the server. For example, if io stepping is 20 millisecs and
+			io ( socket ) buffer is 8192 bytes, then the maximum data troughput
+			per second is ( 1000 / 20 ) * 8192 = 409600 bytes / s, or 400 K/s.
+			
+		Stress Test
+		
+			Stress test performs load test on the secondary server. It starts
+			pushing a live stream to the server, and through multiple
+			connections it pulls them from the server testing stream distribution
+			and data throughput capabilities.
+		
+
+3. Programming the server
+
+
+	3.1 Overview
+		
+		You can create custom applications or application packages for Milenia 
+		Grafter Server in Java. You simply have to create a jar package from 
+		your compiled classes / packages, and copy it under Milenia's custom 
+		application	folder, and they are ready to use. 
+		Custom applications are dynamically	loaded at startup or on the fly 
+		triggered from the admin console. Custom applications must not be in 
+		the classpath, otherwise jvm cannot	reload them.
+		
+		Development tip : always create a startup script, which compiles/packs 
+		your custom application in your workspace, then copies it under milenia, 
+		and starts up the server.
+		
+		To reach Milenia's API, you have to use the API classes packed in 
+		Milenia. There are three main rules for a custom application:
+		
+		1. The main class of your application must be called Application
+		2. The main class of your application must be in a package called 
+		   application
+		3. The main class of your application must implement IApplication 
+		   interface
+		
+		You have to be careful on the server with threads, because various 
+		events can come from various threads, use synchronization when there 
+		can be concurrencies.
+		
+		There is also an important thing for the client side : never forget to 
+		set AMF object encoding to AMF0 on the client side, because Milenia 
+		uses AMF0.
+		
+		
+	3.2 IApplication interface - com.milgra.server.api.IApplication
+		
+		You have to implement IApplication interface in the main class of your custom application. IApplication contains three main controller methods:
+	
+		onStart ( String nameX )
+			
+			Milenia triggers this function when an application is loaded. It
+			receives the application's name with scope ( if it has one ).
+			You can put initialization here, but its also good within the
+			custom applications constructor.
+		
+		onClose ( )
+			
+			The server will call it when the admin unloads this application 
+			from admin console during runtime. You have to define a complete 
+			cleanup	code here to avoid memory leaks.
+		
+		onEnter ( Client clientX , WrapperList argumentsX )
+		
+			Client entering point, clientX is the client instance, messageX is 
+			the wrapperlist containing the arguments passed by the client. 
+			clientX will be in idle state, until you call the clientX.accept( ) 
+			or clientX.reject( ) methods.
+		
+		onLeave ( Client clientX );
+		
+			Client leaving point, do client-related cleanup here.
+			
+	
+	3.3 Client class - com.milgra.server.api.Client
+	
+		You can control connected ( passive ), and remote ( active ) client
+		behaviour with this class.
+
+		Constructor
+		
+		
+		public Client ( IApplication applicationX )
+		
+			You can create a new remote client instance with the constrcutor, 
+			attached to the given application. After creation, you can connect
+			the	client to a remote server, and exchange data , 
+			pull / push streams.
+		
+		
+		Getter/Setters
+		
+		
+		public long getId ( )
+		
+			Returns the unique identifier number of the client.
+			
+		
+		public long getPing( )
+		
+			The ping rountrip time of the client.
+			
+					
+		public long getBytesIn( )
+		
+			The received byte count by the server from this client
+			
+		
+		public long getBytesOut( )
+		
+			The sent byte count to this client
+			
+				
+		public double getBandIn( )
+		
+			The actual incoming bandwidth of the client in bytes per second.
+			
+		
+		public double getBandOut( )
+		
+			The actual outgoing bandwidth of the client in bytes per second.
+			
+
+		public String getIp( )
+		
+			Returns the ip address of the client.
+			
+			
+		public String getAgent( )
+		
+			The player / server info of the client.
+			
+		
+		public String getReferrer( )
+		
+			The referrer of the client.
+			
+			
+		Passive mode only methods :
+	
+		
+		public void accept ( )
+		
+			Accepts the client
+			
+		
+		public void accept ( Wrapper wrapperX )
+		
+			Accepts the client with a wrapper as acception info, the client 
+			receives it as the NetStatus event's info.applicaiton parameter
+			
+		
+		public void reject ( Wrapper wrapperX )
+		
+			Rejects the client, you can pass a wrapper as rejection info, the 
+			client receives it as the NetStatus event's info.application 
+			parameter
+			
+		
+		public void detach ( )
+		
+			Detaches the client from the server
+		
+		
+		Active mode only methods :
+		 
+
+		public void connect ( String uriX , Wrapper argumentsX )
+		
+			Connects the client to a remote server with address uriX, 
+			passing argumentX as connection object
+			
+		
+		public void connect ( String uriX , WrapperList argumentsX )
+		
+			Connects the client to a remote server with address uriX, 
+			passing argumentsX as connection object
+		
+		
+		Common Methods
+		
+			
+		public void call ( String invokeID )
+		
+			Invokes a method on client side without arguments
+		
+		
+		public void call ( String invokeID , Wrapper argumentX )
+		
+			Invokes a method on client side with a wrapper as arguments
+		
+		
+		public void call ( String invokeID , WrapperList argumentX )
+		
+			Invokes a method on client side with an wrapperlist as argument
+		
+		
+		public void callResult ( String invokeID , Wrapper argumentX )
+		
+			If a responder for a specific function is defined on client side, 
+			you may pass back a result with this function
+			
+		
+		public void callResult ( String invokeID , WrapperList argumentsX )
+		
+			If a responder for a specific function is defined on client side, 
+			you may pass back a result with this function with a wrapperlist 
+			as an arguments
+			
+		
+		public void addStreamEventListener ( EventListener listenerX )
+		
+			You may add a stream event listener object to the client with this
+			method.
+					
+		
+		public void addInvokeEventListener ( EventListener listenerX )
+		
+			You may add an invoke event listener object to the client with 
+			this method.
+			
+		
+		public void addStatusEventListener ( EventListener listenerX )
+		
+			You may add a status event listener object to the client with this 
+			method.
+			
+		
+		public HashMap < Double , String > getPlayers ( )
+		
+			Returns the list of streams played by the client
+			
+		
+		public HashMap < Double , String >getRouters ( )
+		
+			Returns the list of streams published by the client
+			
+	
+	
+	
+	3.4 Stream class - com.milgra.server.api.stream
+	
+		Stream class contains stream related properties and methods. There are 
+		two types of stream on Milenia : incoming streams, which is published 
+		by clients or other servers, and outgoing streams, which are played by 
+		clients or pulled by other server. Incoming streams are represented by 
+		stream routers, outgoing streams by stream players. Both of them are 
+		represented by the stream class. However if stream instance is a 
+		stream player, you can only enable/disable/delete it, other methods 
+		aren't working on it.
+		
+		Mileania's stream pool is shared, so every applicaiton can reach every 
+		stream published to the server. You can publihs/record/play streams 
+		from clients without access control by default. If you want to control
+		stream access, you have to define a stream event listener in your 
+		custom application, and register it with addStreamEventListener( ). 
+		After this you will be notified about every NetStream.play and 
+		NetStream.publish event, and you have to enable or disable these 
+		requests.
+		
+		
+		Properties
+		
+		
+		public static final String PLAYER;
+		
+			player type identifier
+			
+		
+		public static final String ROUTER;
+		
+			router type identifier
+			
+		
+		public String type;
+		
+			type of the stream, can be PLAYER or ROUTER
+			
+		
+		public String name;
+		
+			name of the played/routed stream. router names are unique, but 
+			multiple players can have the same name, when they are playing 
+			the same stream.
+		
+		
+		public String mode;
+		
+			if type is router, then recording mode. can be live, record, append
+		
+		
+		public Client client;
+		
+			owner of the stream, if stream has no owner, then null
+			
+		
+		Methods
+		
+		
+		public Stream ( String nameX )
+		
+			creates a stream on local server under the given name
+			
+		
+		public Stream ( String nameX , Client clientX )
+		
+			creates a stream on remote server defined by clientX.
+			
+		
+		public void play ( String nameX )
+		
+			starts playing the given stream. if given stream doesn't exist, it 
+			waits for its appereance. If stream name ends with ".flv", it tries to
+			play a recorded stream with that name from the default stream directory.
+		
+	
+		public void publish ( String nameX , String modeX )
+		
+			publishes the given stream to the remote server, if stream is an active
+			stream, with the given mode.
+		
+
+		public void delete ( )
+		
+			deletes the stream from the server, if its a live stream, its 
+			broadcasting is stopped
+
+	
+		public void enable ( )
+		
+			enables a stream route/play request. if you have defined a stream event 
+			listener for a client, you have to enable/disable streams related to 
+			incoming events
+			
+		
+		public void disable ( )
+		
+			disables a stream route/play request, the client will receive a 
+			NetStream.Publish.Failed or NetStream.Play.Failed event. 
+			if you have defined a stream event listener for a client, you have to 
+			enabled/disable streams related to incoming events.
+				
+				
+		public void enableAudio ( boolean stateX )
+		
+			enables/disables audio transfer in the specific stream
+			
+		
+		public void enableVideo ( boolean stateX )
+		
+			enables/disables video transfer in the specific streams
+			
+	
+		public void pause ( boolean stateX )
+		
+			pauses/resumes stream playing
+		
+		
+		public void record ( boolean stateX )
+		
+			starts/stops recording the specific streams
+			
+	
+		public void seek ( int positionX )
+		
+			seeks in vod stream
+			
+			
+		public void speed ( double multiplierX )
+		
+			sets speed of vod stream
+			
+			
+		public double getSpeed ( )
+		
+			returns the speed of the vod player 
+	
+
+		public double getPosition ( )
+		
+			returns position of vod 
+
+
+		public double getDuration ( )
+		
+			returns duration of stream 
+	
+
+		public String getType ( )
+		
+			returns type of stream 
+	
+
+		public String getName ( )
+		
+			returns name of stream 
+	
+
+		public String getMode ( )
+		
+			returns mode of stream
+			
+			
+		Static Methods 
+	
+	
+		public static ArrayList < String > getStreamNames ( )
+		
+			returns streams avaliable on server
+			 
+	
+	3.5 Wrapper classes
+	
+		Wrapper classes are a simple value wrappers, but most of your time 
+		programming Milenia Grafter Server you will use wrappers.
+		As you know, java is a strictly typed language and actionscript is weakly 
+		typed. During data exchange flash can send objects and arrays containing 
+		mixed data types, and on the java side after deserialization we have to 
+		keep this state somehow	in the strictly typed environment. That's why 
+		Wrapper class was born. AMF deserializer wraps data in Wrapper objects, 
+		and serializer uses	Wrappers for input also.
+		
+		
+		public class Wrapper
+		
+			wraps a java data type
+			
+		
+		Properties
+		
+		
+		public String type
+		
+			contains the type of the wrapped value
+			
+		
+		public double doubleValue
+		
+			the value of a wrapped double
+			
+		
+		public String stringValue
+		
+			the value of a wrapped string
+			
+		
+		public boolean booleanValue
+		
+			the value of a wrapped boolean
+			
+		
+		public WrapperMap mapValue
+		
+			the value of a wrapped WrapperMap
+			
+		
+		public WrapperList listValue
+		
+			the value of a wrapped WrapperList
+			
+		
+		Static properties
+		
+		
+		public static final String MAP
+		
+			HashMap type identifier constant
+			
+		
+		public static final String NULL
+		
+			Null type identifier constant
+			
+		
+		public static final String LIST
+		
+			ArrayList type identifier constant
+			
+		
+		public static final String DOUBLE
+		
+			Double type identifier constant
+			
+		
+		public static final String STRING
+		
+			String type identifier constant
+			
+		
+		public static final String BOOLEAN
+		
+			Boolean type identifier constant
+			
+		
+		Methods
+		
+		
+		public Wrapper ( )
+		
+			createw a wrapper containing NULL	
+		
+		
+		public Wrapper ( valueX )
+		
+			the constructor of Wrapper, accepts double, boolean, string, hashmap, 
+			arraylist as parameters, if it receives no parameter, then wrapped 
+			type will be null.
+			
+		
+		public class WrapperList
+		
+			wraps an ArrayList of wrapper objects
+			
+		
+		Methods
+		
+		
+		public WrapperList ( )
+		
+			creates an empty wrapperlist
+			
+		
+		public WrapperList ( Wrapper itemX )
+		
+			creates a wrapperlist with itemX a first element
+			
+		
+		public WrapperList ( List < Wrapper > sourceX )
+		
+			creates a wrapperlist containing sourceX
+			
+		
+		public void add ( )
+		
+			adds a wrapped null to the list
+			
+		
+		public void add ( String stringX )
+		
+			adds a wrapped string to the list
+			
+		
+		public void add ( double doubleX )
+		
+			adds a wrapped double to the list
+			
+		
+		public void add ( boolean booleanX )
+		
+			adds a wrapped boolean to the list
+			
+		
+		public void add ( WrapperMap mapX )
+		
+			adds a wrapped wrappermap to the list
+			
+		
+		public void add ( WrapperList listX )
+		
+			adds a wrapped wrapperlist to the list
+			
+		
+		public String getType ( int indexX )
+		
+			returns the type of the specific element
+			
+		
+		public String getString ( int indexX )
+		
+			returns the string value of the specific element
+			
+		
+		public double getDouble ( int indexX )
+		
+			returns the double value of the specific element
+			
+		
+		public boolean getBoolean ( int indexX )
+		
+			returns the boolean value of the specific element
+			
+		
+		public WrapperMap getMap ( int indexX )
+		
+			returns the wrappermap value of the specific element
+			
+		
+		public WrapperList getList ( int indexX )
+		
+			returns the wrapperlist value of the specific element
+			
+		
+		public class WrapperMap
+		
+			wraps a HashMap of wrapper objects
+			
+		
+		Methods
+		
+		
+		public WrapperMap ( )
+			
+			creates an empty wrappermap
+				
+		
+		public WrapperMap ( Map < String , Wrapper > sourceX )
+		
+			creates a wrappermap containing the given map
+			
+		
+		public WrapperMap ( String [ ] keysX , Object [ ] valuesX )
+		
+			creates a wrappermap with the given key-value pairs
+			
+		
+		public void put ( String keyX )
+		
+			puts a null value in WrapperMap with the given key
+			
+		
+		public void put ( String keyX , String stringX )
+		
+			puts a String value in map under key
+			
+		
+		public void put ( String keyX , double doubleX )
+		
+			puts a double value in map under key
+		
+		
+		public void put ( String keyX , boolean booleanX )
+		
+			puts a boolean value in map under key
+			
+		
+		public void put ( String keyX , WrapperMap mapX )
+		
+			puts a map value in map under key
+			
+		
+		public void put ( String keyX , WrapperList listX )
+		
+			puts a list value in map under key
+			
+		
+		public String getType ( String keyX )
+		
+			returns type of the stored wrapper under key
+			
+		
+		public String getString ( String keyX )
+			
+			return string value of the wrapper at key
+		
+		
+		public double getDouble ( String keyX )
+		
+			returns double value of the wrapper at key
+			
+		
+		public boolean getBoolean ( String keyX )
+		
+			returns boolean value of the wrapper at key
+			
+		
+		public WrapperMap getMap ( String keyX )
+		
+			returns map value of the wrapper at key
+			
+		
+		public WrapperList getList ( String keyX )
+		
+			returns list value of the wrapper at key
+			
+		
+	3.6 InvokeEvent
+	
+		InvokeEvent is an event information holder for invoke calls. It is 
+		dispatched by client instances. To watch for invoke events, first you 
+		have to create an instance of the EventListener class, and redefine its 
+		onEvent function where you define what to do with the event, then you 
+		have to add this eventlistener instance to a client by calling 
+		Client.addInvokeEventListener.
+		
+		Properties
+		
+		public String id
+		
+			identifier of the call, this is what you pass on the client side with 
+			NetConnection.call( identifier ... )
+		
+		public Client client
+		
+			the client instance where this event is coming from
+		
+		public WrapperList arguments
+		
+			the arguments related to this call
+			
+	
+	3.7 Stream Events
+	
+		StreamEvent is an event information holder for stream events. It is 
+		dispatched by client instances To watch for stream events, first you 
+		have to create an instance of the EventListener class, and redefine its 
+		onEvent function where you define what to do with the event, then you 
+		have to add this eventlistener instance to a client by calling 
+		Client.addStreamEventListener.
+		
+		Properties
+		
+		public Client client
+		
+			the client instance where this event is coming from
+		
+		public Stream stream
+		
+			the stream instance related to this stream. you may check the type of 
+			the instance first with Stream.type, then the name with Stream.name, 
+			then you have to enable or disable this request with Stream.enable( ) 
+			or Stream.disable( ). you can event store the stream instance, and 
+			enable/disable it later, the stream will be in idle state till that, 
+			and wont transfer any data.
+		
+		
+	3.8 Status Events
+	
+		StatusEvent is an event information holder for client's status or stream 
+		events. It is dispatched by client instances To watch for status events, 
+		first you have to create an instance of the EventListener class, and 
+		redefine its onEvent function where you define what to do with the event,
+		then you have to add this eventlistener instance to a client by calling 
+		Client.addStatusEventListener.
+		
+		Properties
+		
+		public String code
+		
+			the code word for the actual event
+		
+		
+		public Client client
+		
+			the client instance where this event is coming from
+			
+		
+		public WrapperMap info
+		
+			the information map related to the event
+			
+		
+		Static Properties
+		
+		
+		public static final String FAILURE
+		
+			connection failure event code word container.
+			
+		
+		public static final String CLOSURE
+		
+			connection closure event code word container
+			
+		
+		public static final String SUCCESS
+		
+			connection success event code word container. the info property of 
+			the event may contain additional information about the success in 
+			the "application" key
+		
+		
+		public static final String REJECTION
+		
+			connection rejection event code word container. the info property of 
+			the event may contain additional information about the rejection in 
+			the "application" key
+			
+		
+		public static final String PLAYSTART
+		
+			stream play reset notify
+			
+		
+		public static final String PLAYRESET
+		
+			stream play start notify
+			
+		
+		public static final String PLAYFAILED
+		
+			stream play failed notify
+		
+		
+		public static final String PUBLISHSTART
+		
+			stream publish start notify
+			
+		
+		public static final String RECORDNOACCESS
+			
+			stream publish failed notify
+			
+		
+		public static final String UNPUBLISHSUCCESS
+		
+			stream unpublish notify
+			
+		
+	3.9 Utilities
+	
+	
+		Timer - com.milgra.server.api.Timer
+		
+			Simple timer. You have to define an EventListener first, then 
+			instantiate the timer with an arbitray interval in milliseconds, 
+			and the eventlistener. 
+			Example:
+			
+		
+		LogWriter - com.milgra.server.util.LogWriter
+		
+			Log writer. Instantiate it with the log file name, then call 
+			addLog( String log ) to add new entry. Close it with close( ). 
+			Example:
+
+
+4. Extra Documentation
+
+
+	4.1 How to create a Custom Application?
+	
+		Donwload and unzip Milenia Grafter Server. Download and install the latest
+		Eclipse for you platform. Ensure that you have JRE 1.5 or higher on your 
+		system, and JRE executables are in the execution path.
+		
+		Start Eclipse. File menuitem -> New -> Project, select Java project, click 
+		Next, type your desired project name as project name. If JRE 1.5 is not 
+		the default, select it under JRE. Click next. For default output folder, 
+		type YourProjectName/bin , so Eclipse will compile classes under a 
+		separate "bin" directory, and it will be easier for us to pack our classes 
+		into jar. Click on libraries tab, click Add External JARs, choose Milenia 
+		Grafter's folder, and select milenia.jar, click Open. That's all for 
+		project setup, click Finish.
+		
+		YourProjectName project appeared in Package Explorer. 
+		File menuitem -> New -> Class.For class name, type Application ( first 
+		letter uppercase ), and in the package field, type application ( all 
+		lowercase ). Every main custom application class must be 
+		application.Application. Click finish.
+		
+		The class is created. Every main application class must implement Milenia 
+		Grafter's IApplication interface. So, under package name type 
+		"import com.milgra.server.IApplication;"
+		
+		Now you have to create the four implemented functions: onEnter, onLeave, 
+		onStart, onClose, and add wanted functionality. If Eclipse shows no 
+		compiler errors/warnings, you are ready to pack your application into jar.
+		
+		Open a terminal, go in your Eclipse workspace directory, go under 
+		YourProject/bin. You see an "application" directory, where eclipse 
+		compiled our application classes. Type
+		
+		jar -cf yourappname.jar application
+		
+		And a yourappname.jar file appears in the directory. Copy this file under 
+		Milenia Grafter Server/applications. Start the server if it's not running,
+		or load the application with MilGraAdmin under applications tab. ( refresh
+		 - load ). The application is ready to use.
+		
+		Check ut the sources of MilGraUnit, everything is there you want to use in 
+		your app deployment.
+		
+		
+	4.2 How to embed Milenia in my application package?
+	
+		You can easily embed the server in your package, simply set Library values
+		to your hearts content, then instantiate the server, like its in Server 
+		class main function. There is also a shutdown hook in Server class, called 
+		shutdown, it kills the server and cleans up everything.
+		
+
+	4.3 How to recompile Milenia?
+	
+		It's very simple. If you are using Eclipse, it places the compiled classes
+		under bin folder, and to make a jar from Milenia, you simply have to go to
+		bin folder, and type "jar -cmf manifest.txt milgra.jar bin" from the
+		command line, and of course manifest.txt has to be there also, and it's
+		ready.

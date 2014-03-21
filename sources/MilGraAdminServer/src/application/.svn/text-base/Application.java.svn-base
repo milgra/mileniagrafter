@@ -1,0 +1,377 @@
+/*
+
+	Milenia Grafter Server
+	
+	Copyright (c) 2007-2008 by Milan Toth. All rights reserved.
+	
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+	
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+	
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+*/
+
+package application;
+
+/**
+	
+	Application class
+	
+	@mail milgra@milgra.com
+	@author Milan Toth
+	@version 20080316
+	
+	Tasks of Admin Application 
+	
+		- collect io information and send it tho admin clients
+		- let the admins do application refresh/load/reload
+
+**/
+
+import java.util.HashMap;
+import java.util.ArrayList;
+
+import com.milgra.server.Server;
+import com.milgra.server.api.Timer;
+import com.milgra.server.api.Client;
+import com.milgra.server.api.Wrapper;
+import com.milgra.server.api.LogWriter;
+import com.milgra.server.api.WrapperMap;
+import com.milgra.server.api.WrapperList;
+import com.milgra.server.api.IApplication;
+import com.milgra.server.api.EventListener;
+
+
+public class Application implements IApplication
+{
+	
+	// filename constants
+	
+	public static final String CONFIGFILE = "admin" + System.getProperty( "file.separator" ) + "config.xml"; 
+	public static final String ACCESSFILE = "admin" + System.getProperty( "file.separator" ) + "access.xml"; 
+	public static final String GRAPHSFILE = "admin" + System.getProperty( "file.separator" ) + "graphs.xml";
+	
+	// timer - timer for periodic data collection
+	// admins - container for admin clients
+
+	public Timer timer;
+	public EventListener timerListener;
+	public HashMap < Long , AdminController > admins;
+	
+	// accessLog - flag indicating access logging
+	// graphsLog - flag indicating graphs logging
+
+	public boolean accessLog;
+	public boolean graphsLog;
+	
+	// graphsLogger - graps log writer
+	// accessLogger - access log writer
+	
+	public LogWriter graphsLogger;
+	public LogWriter accessLogger;
+	
+	// reader - config xml reader
+	// writer - config xml writer
+	
+	public ConfigReader reader;
+	public ConfigWriter writer;
+	
+	/**
+	 * Application constructor
+	 */
+
+	public Application ( ) 
+	{
+		
+		System.out.println( System.currentTimeMillis() + " MilGra Admin 1.0" );
+		
+		// create
+		
+		writer = new ConfigWriter( CONFIGFILE );
+		reader = new ConfigReader( CONFIGFILE );
+
+		accessLogger = new LogWriter( ACCESSFILE );
+		graphsLogger = new LogWriter( GRAPHSFILE );
+		
+		admins = new HashMap < Long , AdminController > ( );
+		timerListener = new EventListener ( ) { public void onEvent ( ) { update( ); } };
+		timer = new Timer( 2000 , timerListener );
+				
+		// set
+		
+		accessLogger.active = reader.accessLogging;
+		graphsLogger.active = reader.graphsLogging;
+		
+		// start
+
+		accessLogger.log( "Milenia Grafter Admin startup on " + System.currentTimeMillis( ) );
+		graphsLogger.log( "Time" + "\t" + 
+						  "Band in Mbits/s" + "\t" + "Band out Mbits/s" + "\t" +
+						  "Clients" + "\t" + "Streams" + "\t" +
+						  "Socket ex." + "\t" + "Stream ex." + "\t" + "Client ex." + "\t" +
+						  "Socket th." + "\t" + "Stream th." + "\t" + "Client th." );
+
+		// start refresh
+		
+		timer.start( );
+
+	}
+	
+	/**
+	 * Closes Application
+	 */
+	
+	public void onClose ( )
+	{
+		
+		// System.out.println( System.currentTimeMillis( ) + " MilGraAdmin Application.onClose" );
+		accessLogger.log( "Milenia Grafter Admin close on " + System.currentTimeMillis( ) );
+		
+		timer.finish( );
+		timer = null;
+				
+		accessLogger.close( );
+		graphsLogger.close( );
+		
+	}
+	
+	/**
+	 * Client entering point 
+	 * @param clientX client
+	 * @param arguments arguments
+	 */
+	
+	public void onEnter ( Client clientX , WrapperList argumentsX )
+	{
+		
+		// System.out.println( System.currentTimeMillis( ) + " MilGraAdmin Application.onAdmin " + clientX.getIp( ) );
+		accessLogger.log( "Milenia Grafter Admin enter on " + System.currentTimeMillis() + " ip: " + clientX.getIp( ) );
+		
+		// ip check
+		
+		boolean valid = false;
+		if ( !reader.hasIp( ) ) valid = true;
+		else if ( reader.hasIp( clientX.getIp( ) ) ) valid = true;
+		
+		if ( valid )
+		{
+			
+			// password check
+
+			String user = argumentsX.getString( 0 );
+			String pass = argumentsX.getString( 1 );
+
+			if ( reader.userName.equals( user ) && reader.passWord.equals( pass ) ) 
+			{
+				
+				// create controller
+				
+				AdminController admin = new AdminController ( clientX , this );
+				admins.put( clientX.getId( ) , admin );
+				
+				accessLogger.log( "Access Granted" );
+				clientX.accept( new Wrapper( "Access granted" ) );
+				
+			}
+			else 
+			{
+			
+				accessLogger.log( "Access denied." );
+				clientX.reject( new Wrapper( "Access denied" ) );
+				
+			}
+			
+		}
+		
+	}
+	
+	/**
+	 * Client leaving point 
+	 * @param clientX client
+	 */
+	
+	public void onLeave ( Client clientX )
+	{
+		
+		// System.out.println( System.currentTimeMillis() + " MilGraAdmin Application.onLeave " + clientX.getId( ) );
+		accessLogger.log( "Milenia Grafter Admin leave on " + System.currentTimeMillis() + " ip: " + clientX.getId( ) );
+		
+		admins.remove( clientX.getId( ) );
+		
+	}
+							
+	/**
+	 * Invokes application load
+	 * @param applicationIdX
+	 */
+	
+	public void loadApplication ( String applicationIdX )
+	{
+		
+		// System.out.println( System.currentTimeMillis() + " MilGraAdmin Application.loadApplication " + applicationIdX );
+		Server.loadApplication( applicationIdX );
+		
+	}
+	
+	/**
+	 * Invokes applicatoin unload
+	 * @param applicationIdX
+	 */
+	
+	public void unloadApplication ( String applicationIdX )
+	{
+
+		// System.out.println( System.currentTimeMillis() + " MilGraAdmin Application.unloadApplication " + applicationIdX );
+		Server.unloadApplication( applicationIdX );
+
+	}
+	
+	/**
+	 * Invokes applications refresh
+	 */
+	
+	public void refreshApplications ( )
+	{
+		
+		// System.out.println( System.currentTimeMillis() + " MilGraAdmin Application.refreshApplications" );
+		Server.readApplications( );
+		
+	}
+	
+	/**
+	 * Collects application info
+	 */
+	
+	public void update ( ) 
+	{
+		
+		// System.out.println( System.currentTimeMillis( ) + " Server.collectApplications" );
+		
+		// create
+		
+		int clients = 0;
+		int streamsIn = 0;
+		int streamsOut = 0;
+		
+		int allBandIn = 0;
+		int allBandOut = 0;
+		
+		int clientTime = 0;
+		int socketTime = 0;
+		int streamTime = 0;
+		
+		int clientCount = 0;
+		int socketCount = 0;
+		int streamCount = 0;
+		
+		WrapperMap appData = new WrapperMap( );
+		WrapperMap graphData = new WrapperMap ( );
+		WrapperList arguments = new WrapperList( );
+		
+		// collect application data
+		
+		for ( String id : Server.states.keySet( ) )
+		{
+			
+			String state = Server.states.get( id ) == true ? "running" : "stopped";
+			WrapperMap appInfo = new WrapperMap( );
+			
+			appInfo.put( "id" , id );
+			appInfo.put( "state" , state );
+			appInfo.put( "bandin" , 0 );
+			appInfo.put( "bandout" , 0 );
+			appInfo.put( "clients" , 0 );
+			
+			synchronized ( Server.clients )
+			{
+				
+				if ( Server.clients.containsKey( id ) ) 
+				{
+					
+					ArrayList < Client > clientList = Server.clients.get( id );
+					
+					int bandIn = 0;
+					int bandOut = 0;
+										
+					for ( Client client : clientList )
+					{
+	
+						bandIn += client.getBandIn( );
+						bandOut += client.getBandOut( );
+						clients ++;
+						
+					}
+					
+					appInfo.put( "bandin" , bandIn );
+					appInfo.put( "bandout" , bandOut );
+					appInfo.put( "clients" , clientList.size( ) );
+					
+					allBandIn += bandIn;
+					allBandOut += bandOut;
+					
+				}
+			
+			}
+
+			appData.put( id , appInfo );
+			
+		}
+		
+		// collect io data
+		
+		if ( Server.pools.containsKey( "socket" ) ) socketTime = Server.pools.get( "socket" ).getDelay( );
+		if ( Server.pools.containsKey( "client" ) ) clientTime = Server.pools.get( "client" ).getDelay( );
+		if ( Server.pools.containsKey( "stream" ) ) streamTime = Server.pools.get( "stream" ).getDelay( );
+		
+		if ( Server.pools.containsKey( "socket" ) ) socketCount = Server.pools.get( "socket" ).getCount( );
+		if ( Server.pools.containsKey( "client" ) ) clientCount = Server.pools.get( "client" ).getCount( );
+		if ( Server.pools.containsKey( "stream" ) ) streamCount = Server.pools.get( "stream" ).getCount( );
+		
+		// stream data
+
+		streamsIn = Server.routers.size( );
+		streamsOut = Server.players.size( );
+				
+		graphData.put( "bandin" , allBandIn );
+		graphData.put( "bandout" , allBandOut );
+		graphData.put( "clients" , clients );
+		graphData.put( "streamsin" , streamsIn );
+		graphData.put( "streamsout" , streamsOut );
+	
+		graphData.put( "sockettime" , socketTime );
+		graphData.put( "streamtime" , streamTime );
+		graphData.put( "clienttime" , clientTime );
+		
+		graphData.put( "socketcount" , socketCount );
+		graphData.put( "streamcount" , streamCount );
+		graphData.put( "clientcount" , clientCount );
+		
+		// add to arguments
+		
+		arguments.add( appData );
+		arguments.add( graphData );
+		
+		// send to admins
+		
+		for ( AdminController admin : admins.values( ) ) admin.updateData( arguments );
+		
+		// log
+		
+		graphsLogger.log( System.currentTimeMillis( ) + "\t" + 
+						  allBandIn + "\t" + allBandOut + "\t" + 
+						  clients + "\t" + streamsIn + "\t" + streamsOut + "\t" + 
+						  socketTime + "\t" + streamTime + "\t" + clientTime + "\t" +
+						  socketCount + "\t" + streamCount + "\t" + clientCount );
+
+	}
+	
+}

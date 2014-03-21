@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/26/trunk/MilGraUnitClient/com/milgra/unit/skin
+END
+PlayerSkin.as
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/26/trunk/MilGraUnitClient/com/milgra/unit/skin/PlayerSkin.as
+END
+RecorderSkin.as
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/26/trunk/MilGraUnitClient/com/milgra/unit/skin/RecorderSkin.as
+END
+TextSkin.as
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/20/trunk/MilGraUnitClient/com/milgra/unit/skin/TextSkin.as
+END
+UnitSkin.as
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/42/trunk/MilGraUnitClient/com/milgra/unit/skin/UnitSkin.as
+END
+LoginSkin.as
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/9/trunk/MilGraUnitClient/com/milgra/unit/skin/LoginSkin.as
+END
+SelectorSkin.as
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/42/trunk/MilGraUnitClient/com/milgra/unit/skin/SelectorSkin.as
+END
+StressSkin.as
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/26/trunk/MilGraUnitClient/com/milgra/unit/skin/StressSkin.as
+END
+MixedSkin.as
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/42/trunk/MilGraUnitClient/com/milgra/unit/skin/MixedSkin.as
+END
+PopupSkin.as
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/9/trunk/MilGraUnitClient/com/milgra/unit/skin/PopupSkin.as
+END
+TestsSkin.as
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/42/trunk/MilGraUnitClient/com/milgra/unit/skin/TestsSkin.as
+END
